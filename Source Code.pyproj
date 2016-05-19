@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{d292c1f3-920c-4279-a10a-8f7a20531a93}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>Source Code\Tweets_Processing.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId />
+    <InterpreterVersion />
+    <IsWindowsApplication>False</IsWindowsApplication>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+    <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Source Code\Auxiliary\Keywords.txt" />
+    <Content Include="Source Code\Auxiliary\MongoDB_Connection_Settings.jpg" />
+    <Content Include="Source Code\Prerequisites.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Source Code\Find_BurstEvents.py" />
+    <Compile Include="Source Code\Legacy Code\index.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Source Code\Legacy Code\Part2_functions.py" />
+    <Compile Include="Source Code\Legacy Code\TwitterStreamAPI_GetTweets.py" />
+    <Compile Include="Source Code\Tweets_Streaming.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Source Code\Tweets_Processing.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Source Code\" />
+    <Folder Include="Source Code\Auxiliary\" />
+    <Folder Include="Source Code\Legacy Code\" />
+  </ItemGroup>
+  <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
+</Project>

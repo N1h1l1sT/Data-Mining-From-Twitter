@@ -1,0 +1,18 @@
+Main error
+Time of Error: 2016-05-19 03:54:27.818466
+name 'coll_Raw_JSON_Tweet' is not defined
+Main error
+Time of Error: 2016-05-19 03:57:02.051671
+name 'all_data' is not defined
+Main error
+Time of Error: 2016-05-19 03:57:25.767516
+name 'other_possible_user_mentions' is not defined
+Main error
+Time of Error: 2016-05-19 03:57:41.987371
+removeStopwords() missing 1 required positional argument: 'stopwords'
+Main error
+Time of Error: 2016-05-19 04:02:21.271409
+key '$$$' must not start with '$'
+Main error
+Time of Error: 2016-05-19 04:04:29.359955
+key '$$$' must not start with '$'

@@ -1,0 +1,55 @@
+https://www.mongodb.org
+the folder C:\Data\db should be available (let alone created) at all times
+
+https://github.com/rsercano/mongoclient/releases/tag/1.0.0
+
+https://pypi.python.org/pypi/nltk
+
+http://nlp.stanford.edu/software/stanford-ner-2015-12-09.zip
+Extracted filed should go to C:\Progs\StanfordNER so that the main .jar is at C:\Progs\StanfordNER\stanford-ner.jar
+
+https://apps.twitter.com/app/new
+
+==================================
+==           Python             ==
+==================================
+
+pip install twitter-text-python
+pip install tweepy
+pip install pymongo
+pip install py-getch
+
+import nltk
+nltk.download()
+(Tab) Corpora -> (Row) Stopwords
+
+==================================
+==           MongoDB            ==
+==================================
+
+mkdir \data\db
+.\mongod.exe
+.\mongod.exe --dbpath {Dir}
+.\mongoimport.exe --jsonArray --db {dbName} --collection {Coll_Name} {json_File}
+show dbs
+use mongorefcon
+show collections
+db.refcrisis.find()
+db.refcrisis.find({ fild_name: "Value" })
+db.refcrisis.find({ fild_name: "Value" })[0]
+db.refcrisis.findOne()
+db.refcrisis.count()
+
+#Projection - keeping just the First and Last name (fields) off the JSON
+var DoePersons = db.refcrisis.find( {last_name : "Doe"}, {first_name : 1, last_name : 1} )
+var JohnDoePersons = db.refcrisis.find({ $or: [{last_name : "Doe"}, {first_name: "John"}] }, {first_name : 1, last_name : 1} )
+
+#Sorting alphabetically by first name for starters, and by last_name afterwards
+#1, -1 descending, ascending (numbers) - ascending, descending (letters)
+var JohnDoePersons = db.refcrisis.find({ $or: [{last_name : "Doe"}, {first_name: "John"}] }, {first_name : 1, last_name : 1} ).sort( {first_name: 1, last_name: -1} )
+
+{$gt: Number} - Greater than a number
+$lt: - Less than
+$ne: - Not equal
+$elemMatch
+{ $exists: true }
