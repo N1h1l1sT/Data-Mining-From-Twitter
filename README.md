@@ -32,8 +32,9 @@ In order to run this programme one need already have:
 ```python
   import nltk
   nltk.download()
-  (Tab) Corpora -> (Row) Stopwords
 ```
+From (Tab) Corpora, go to -> (Row) Stopwords, and download them
+
 * Mongo DB: https://www.mongodb.org
   the folder C:\Data\db should be available (let alone created) at all times
 * Mongoclient (is recommended, yet not a prerequisite) https://github.com/rsercano/mongoclient/releases/tag/1.0.0
