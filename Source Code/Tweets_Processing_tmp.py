@@ -15,8 +15,6 @@ from nltk.tag.stanford import StanfordNERTagger
 #region Initialisation
 
 #Setting (environmental) variables
-LogDir = "./Source Code/Logs/"
-DistributionDir = "./Source Code/Distribution/"
 StanfordNERClassifierPath = "C:\Progs\stanfordNER\classifiers\english.all.3class.distsim.crf.ser.gz"
 StanfordNERjarPath = "C:\Progs\stanfordNER\stanford-ner.jar"
 st = StanfordNERTagger(StanfordNERClassifierPath, StanfordNERjarPath)
@@ -27,8 +25,8 @@ os.environ['JAVAHOME'] = java_path
 #Connect to a MongoDB Database
 client = pymongo.MongoClient() #Lack of arguments defaults to localhost:27017
 db = client['mongorefcon']
-collection = db['refcrisis']
-proc_coll = db['ProcessedTweets']
+proctweets_coll = db['proctweets']
+ProcessedTweets_coll = db['ProcessedTweets']
 
 #endregion
 
@@ -61,7 +59,10 @@ def isEnglish(text):
     except UnicodeEncodeError:
         return False
     else:
-        return True
+        if hasNumbers(text):
+            return False
+        else:
+            return True
 #Removes non English words
 #[input: string] [output: list]
 def removeNonEnglishText(text):
@@ -91,7 +92,7 @@ def SentenceStringStrip(text):
 #Removes Special Characters from a string
 #[input: string] [output: string]
 def removeSpecialCharsFromText(text):
-    dirtyChars = [',', '.', ';', '?', '/', '\\', '`', '[', ']', '"', ':', '>', '<', '|', '-', '_', '=', '+', "#", "@"]
+    dirtyChars = [',', '.', ';', '?', '/', '\\', '`', '[', ']', '"', ':', '>', '<', '|', '-', '_', '=', '+', '(', ')', '^', '{', '}', '~', '\'', '*', '&', '%', '$', '!', '@', '#']
     for i in range(0, len(dirtyChars)):
         text = str.replace(text, dirtyChars[i], " ")
     result = SentenceStringStrip(text)
@@ -114,55 +115,34 @@ def getTheNamedEntities(text):
     for tag in lstTag:
         result [str(str(tag[0])).replace('.','')] = str(tag[1])
     return result
+
+def hasNumbers(String):
+    return any(char.isdigit() for char in String)
 #endregion
 
 #region Main
 
 #region Checking if there already are data in the DB
-if proc_coll.count() > 0:
-    print("There's already data on the proc_coll collection!!")
+if ProcessedTweets_coll.count() > 0:
+    print("There's already data on the ProcessedTweets_coll collection!!")
     pause_exit(status=0, message='Press any key to exit...')
 #endregion
 
 try:
-    TweetsPostTimeDistributionfile = open(DistributionDir + 'TweetsPostTimeDistribution.csv', 'w')
+    TweetsPostTimeDistributionfile = open('TweetsPostTimeDistribution.csv', 'a')
+    curIndex = 0
 
-    for RawTweet in collection.find(): #in case we need to continue from a particular place in the collection, add the appropriate skip argument on find()
+    for RawTweet in proctweets_coll.find(): #in case we need to continue from a particular place in the collection, add the appropriate skip argument on find()
         #region Acquiring basic info from the Raw Twitter JSON
-        tweet_id = RawTweet["id_str"]
-        user_id = RawTweet["user"]["id_str"]
-        user_screenname = "@" + RawTweet["user"]["screen_name"]
-        created_at = RawTweet["created_at"]
-        timestamp_ms = RawTweet["timestamp_ms"]
-        in_reply_to_status_id_str = RawTweet["in_reply_to_status_id_str"]
-        in_reply_to_user_id_str = RawTweet["in_reply_to_user_id_str"]
-        in_reply_to_screen_name = RawTweet["in_reply_to_screen_name"]
-        friends_count = RawTweet["user"]["friends_count"]
-        followers_count = RawTweet["user"]["followers_count"]
-        statuses_count = RawTweet["user"]["statuses_count"]
-        lang = RawTweet["user"]["lang"]
-        orig_tweet = RawTweet["text"]
+        username = RawTweet["username"]
+        tweet_id = RawTweet["id"]
+        created_at = RawTweet["datetime"]
+        lang = RawTweet["lang"]
+        orig_tweet = RawTweet["orig_tweet"]
 
-        tempURLs = RawTweet["entities"]["urls"]
-        urls = [None] * len(tempURLs)
-        for i in range(0, len(tempURLs)):
-            urls[i] = tempURLs[i]["expanded_url"].lower()
-
-        temphashtags = RawTweet["entities"]["hashtags"]
-        hashtags = [None] * len(temphashtags)
-        for i in range(0, len(temphashtags)):
-            hashtags[i] = temphashtags[i]["text"].lower()
-
-        tempuser_mentions = RawTweet["entities"]["user_mentions"]
-        user_mentions = [None] * len(tempuser_mentions)
-        for i in range(0, len(tempuser_mentions)):
-            user_mentions[i] = tempuser_mentions[i]["screen_name"].lower()
-
-        for i in range(0, len(hashtags)):
-            hashtags[i] = "#" + hashtags[i]
-
-        for i in range(0, len(user_mentions)):
-            user_mentions[i] = "@" + user_mentions[i]
+        urls = RawTweet["URLs"]
+        hashtags = RawTweet["hashtags"]
+        user_mentions = RawTweet["Mentions"]
         #endregion
 
         #region Cleaning & Extrapolation data
@@ -174,7 +154,8 @@ try:
         CleanURLs = getWordsStartingWith(tweet_lowercaseList, "http:")
         CleanURLs += getWordsStartingWith(tweet_lowercaseList, "https:")
 
-        tweet_cleaned = removeListItemsFromText(tweet_lowercase, "rt ")
+        tweet_cleaned = " ".join([word for word in removeNonEnglishText(tweet_lowercase)])
+        tweet_cleaned = removeListItemsFromText(tweet_cleaned, "rt ")
         tweet_cleaned = removeListItemsFromText(tweet_cleaned, hashtags)
         tweet_cleaned = removeListItemsFromText(tweet_cleaned, CleanURLs)
         tweet_cleaned = removeListItemsFromText(tweet_cleaned, user_mentions)
@@ -188,7 +169,7 @@ try:
         tweet_cleaned = removeSpecialCharsFromText(tweet_cleaned)
         tweet_cleaned = removeStopwords(tweet_cleaned)
         tweet_cleaned = tweet_cleaned.strip()
-        namedEntities = getTheNamedEntities(tweet_cleaned)
+        namedEntities = RawTweet["namedEntities"]
         proc_tweet = tweet_cleaned
 
         #stemming
@@ -210,22 +191,15 @@ try:
         #region Data Processing for saving
         #Getting the Processed Data JSON ready to be inserted into the MongoDB
         proc_data = {
-                    "user_screenname": user_screenname,
-                    "user_id": user_id,
                     "tweet_id": tweet_id,
                     "created_at": created_at,
-                    "timestamp_ms": timestamp_ms,
                     "is_retweet": is_retweet,
-                    "in_reply_to_status_id_str": in_reply_to_status_id_str,
-                    "in_reply_to_user_id_str": in_reply_to_user_id_str,
-                    "in_reply_to_screen_name": in_reply_to_screen_name,
-                    "friends_count": friends_count,
-                    "followers_count": followers_count,
-                    "statuses_count": statuses_count,
                     "urls": urls,
+                    "land": lang,
                     "hashtags": hashtags,
-                    "user_mantions": user_mentions,
+                    "user_mentions": user_mentions,
                     "namedEntities": namedEntities,
+                    "orig_tweet": orig_tweet,
                     "proc_tweet": proc_tweet,
                     "stemmed_tweet": stemmedTweet
                     }
@@ -233,14 +207,16 @@ try:
 
         #region Saving the Data
         #Inserting them to the MongoDB database
-        mongo_proc_data = proc_coll.insert_one(proc_data)    #Saving Collection Processed Tweet
+        mongo_proc_data = ProcessedTweets_coll.insert_one(proc_data)    #Saving Collection Processed Tweet
         #endregion
 
         TweetPostTime = datetime.strptime(created_at,'%a %b %d %X %z %Y').strftime('%d/%m/%y %X')
         TweetsPostTimeDistributionfile.write(tweet_id + "," + TweetPostTime + "\n")
 
         try:
-            print(orig_tweet)
+            curIndex += 1
+            print(curIndex)
+            #print(orig_tweet)
         except Exception as ex:
             print('Print error\n' + 'Time of Error: ' + str(datetime.now()) + '\n' + str(ex) + '\n')
             continue
@@ -250,8 +226,7 @@ try:
 except Exception as e:
     eMessage = 'Main error\n' + 'Time of Error: ' + str(datetime.now()) + '\n' + str(e) + '\n'
     print (str(eMessage))
-    saveFile = open(LogDir + 'TweetProcessing_Problems.txt', 'a')
+    saveFile = open('TweetProcessing_Problems.txt', 'a')
     saveFile.write(eMessage)
     saveFile.close()
 #endregion
-

@@ -9,15 +9,16 @@ from datetime import datetime
 #endregion
 
 #region Initialisation
+LogDir = "./Source Code/Logs/"
 client = MongoClient() #Lack of arguments defaults to localhost:27017
 db = client['mongorefcon']
 collection = db['refcrisis']
 
 #We need the consumer key, consumer secret, access token, access secret.
-ckey = "jrzcRp3AQUvNADKxbZkfiXtnE"
-csecret = "RHFxfGdZyn3K2jMXtwuhZ22Cy1yGOlHZWpF25ZydYWUY79tQhZ"
-atoken = "1211288082-P6Ee5j6H0bjMfEze5t9mSWL9sSvyFvcYBL9WaV0"
-asecret = "y31CRerUXliV7MDkGJO2WjS2Dw95M6L53fRJwsq2s9753"
+ckey = "ro4d6rvefo412pnYxNV3Xb5ej"
+csecret = "H5f9qKWMZuW5Re4NgE2m9ODDNe6XfqmmOg68C46bY2Ro6fCwWN"
+atoken = "1211288082-kE6J6vqU1dzf9KHBEY3uC4wDg0zzrOZc4hA067N"
+asecret = "quZJdlpEUGlQUwe4m9oZr7GVImDx16OuXptADBh6wXzWu"
 #endregion
 
 #region Classes
@@ -42,7 +43,7 @@ class listener(StreamListener):
         #in case internet drops or something, let's not stop the whole procedure
         except BaseException as e:
             print ('failed with error: ', str(e))
-            saveFile = open('Problem_Encountered.txt', 'a')
+            saveFile = open(LogDir + 'Streaming_Listener_Problems.txt', 'a')
             eMessage = 'Time of Error: ' + str(datetime.now()) + '\n' + str(e) + '\n\n'
             saveFile.write(eMessage)
             saveFile.close()
@@ -50,7 +51,7 @@ class listener(StreamListener):
 
     #Defining what to do in case of an error
     def on_error(self, status):
-        print (status)
+        print ("on_error: " + str(status))
 
 #endregion
 
@@ -63,7 +64,7 @@ try:
 
 except Exception as e:
     print (str(e))
-    saveFile = open('Problem_Encountered.txt', 'a')
+    saveFile = open(LogDir + 'Streaming_APIAuthenticating_Problems.txt', 'a')
     eMessage = 'Time of Error: ' + str(datetime.now()) + '\n' + str(e) + '\n\n'
     saveFile.write(eMessage)
     saveFile.close()
@@ -83,7 +84,7 @@ while True:
     except Exception as e:
         print (str(e))
 
-        saveFile = open('Problem_Encountered.txt', 'a')
+        saveFile = open(LogDir + 'Streaming_Main_Problems.txt', 'a')
         eMessage = 'Time of Error: ' + str(datetime.now()) + '\n' + str(e) + '\n\n'
         saveFile.write(eMessage)
         saveFile.close()

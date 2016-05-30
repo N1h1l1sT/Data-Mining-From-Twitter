@@ -31,7 +31,6 @@ def isEnglish(text):
 #Removes non English words
 #[input: string] [output: list]
 
-
 #region Checking if there already are data in the DB
 if proc_coll.count() > 0:
     print("There's already data on the proc_coll collection!!")
@@ -42,7 +41,7 @@ count = 0
 
 for sTweet in proc_coll.find(): #in case we need to continue from a particular place in the collection, add the appropriate skip argument on find()
 	#region Acquiring basic info from the Raw Twitter JSON
-	
+
 	tweetid = sTweet["id"]
 	username = sTweet["username"]
 	tweettimestamp = sTweet["datetime"]
@@ -58,23 +57,28 @@ for sTweet in proc_coll.find(): #in case we need to continue from a particular p
 	print(count)
 	count += 1
 
-
 	try:
 		#print(proc_tweet)
 		textList = proc_tweet.split(' ')
 		#print(textList)
-	except Exception as e: 
+	except Exception as e:
 			print(e)
 
 	cleanWords = list()
+
 
 	for word in textList:
 		if isEnglish(word):
 			cleanWords.append(word)
 
 	singles = [stemmer.stem(stemTweet) for stemTweet in cleanWords]
-	
-	stemmedTweet = singles
+
+	stemmedString = ''
+
+	for word in singles:
+		stemmedString += word + ' '
+
+	stemmedTweet = stemmedString
 
 	stemmedData = { "id": tweetid,
                     "username": username,
@@ -92,9 +96,7 @@ for sTweet in proc_coll.find(): #in case we need to continue from a particular p
 
 	result2 = stemmedCollection.insert_one(stemmedData) #The Processed + Stemmed JSON format
 
-	
 	#w8 = input("Pause")
 	#if w8 == "stop":
 		#sys.exit("exiting...")
 
-	

@@ -5,14 +5,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{d292c1f3-920c-4279-a10a-8f7a20531a93}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>Source Code\Tweets_Processing.py</StartupFile>
+    <StartupFile>Source Code\Topic_Detection.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <InterpreterId />
-    <InterpreterVersion />
+    <InterpreterId>{9a7a9026-48c1-4688-9d5d-e5699d47d074}</InterpreterId>
+    <InterpreterVersion>3.5</InterpreterVersion>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
@@ -24,26 +24,47 @@
   <ItemGroup>
     <Content Include="Source Code\Auxiliary\Keywords.txt" />
     <Content Include="Source Code\Auxiliary\MongoDB_Connection_Settings.jpg" />
-    <Content Include="Source Code\Prerequisites.txt" />
+    <Content Include="Source Code\Auxiliary\Prerequisites.txt" />
+    <Content Include="Source Code\Classification\Anotations.txt" />
+    <Content Include="Source Code\Classification\__pycache__\someFunctions.cpython-35.pyc" />
+    <Content Include="Source Code\Distribution\datefile.csv" />
+    <Content Include="Source Code\Distribution\datefile.xlsx" />
+    <Content Include="Source Code\Distribution\datefile2.csv" />
+    <Content Include="Source Code\Logs\LDA.Log" />
+    <Content Include="Source Code\Logs\Streaming_APIAuthenticating_Problems.txt" />
+    <Content Include="Source Code\Logs\Streaming_Listener_Problems.txt" />
+    <Content Include="Source Code\Logs\Streaming_Main_Problems.txt" />
+    <Content Include="Source Code\Logs\TweetProcessing_Problems.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source Code\Find_BurstEvents.py" />
-    <Compile Include="Source Code\Legacy Code\index.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Source Code\Legacy Code\Part2_functions.py" />
-    <Compile Include="Source Code\Legacy Code\TwitterStreamAPI_GetTweets.py" />
+    <Compile Include="Source Code\Auxiliary\Legacy Code\Find_BurstEvents.py" />
+    <Compile Include="Source Code\Auxiliary\Legacy Code\index.py" />
+    <Compile Include="Source Code\Auxiliary\Legacy Code\Part2_functions.py" />
+    <Compile Include="Source Code\Auxiliary\Legacy Code\stemming.py" />
+    <Compile Include="Source Code\Auxiliary\Legacy Code\TweetsAsCollections.py" />
+    <Compile Include="Source Code\Auxiliary\Legacy Code\TwitterStreamAPI_GetTweets.py" />
+    <Compile Include="Source Code\Classification\createSets.py" />
+    <Compile Include="Source Code\Classification\someFunctions.py" />
+    <Compile Include="Source Code\Topic_Detection.py" />
+    <Compile Include="Source Code\Tweets_Processing.py" />
     <Compile Include="Source Code\Tweets_Streaming.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Source Code\Tweets_Processing.py">
+    <Compile Include="Source Code\Tweets_Processing_tmp.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Source Code\" />
     <Folder Include="Source Code\Auxiliary\" />
-    <Folder Include="Source Code\Legacy Code\" />
+    <Folder Include="Source Code\Auxiliary\Legacy Code\" />
+    <Folder Include="Source Code\Classification\" />
+    <Folder Include="Source Code\Classification\__pycache__\" />
+    <Folder Include="Source Code\Distribution\" />
+    <Folder Include="Source Code\Logs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.5" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
