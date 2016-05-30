@@ -1,5 +1,4 @@
-# Refugee Crisis: A Twitter-based Event Summarisation
-Written in Python 3 format.
+# Data-Mining-From-Twitter
 
 This project can also be opened by Visual Studio with the Python Tools for VS (https://www.visualstudio.com/en-us/features/python-vs.aspx)
 
