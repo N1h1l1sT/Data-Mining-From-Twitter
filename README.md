@@ -11,9 +11,7 @@ This project was created in the context of the M.Sc Course Data Mining and Infor
 
 ## Categories
 1. Streaming from Twitter by Tweets_Streaming.py
-
 2. Preprocessing of Data by Tweets_Processing.py
-
 3. Event Summarisation by Topic_Detection.py
 
 ## Prerequisites
