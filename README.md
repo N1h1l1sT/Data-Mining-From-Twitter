@@ -27,7 +27,6 @@ In order to run this programme one need already have:
 * Your OWN twitter API Consumer Key (API Key), Consumer Secret (API Secret), Access Token, and Access Token Secret https://apps.twitter.com/app/new
 * NLTK https://pypi.python.org/pypi/nltk
 * Stanford NLTK http://nlp.stanford.edu/software/stanford-ner-2015-12-09.zip
-
   Extracted filed should go to C:\Progs\StanfordNER so that the main .jar is at C:\Progs\StanfordNER\stanford-ner.jar (alternatively, change the path on the actual code to point to whatever other directory)
 * After having the NLTK, open python through a console or an IDE and do the following:
 ```python
