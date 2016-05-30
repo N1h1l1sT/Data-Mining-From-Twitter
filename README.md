@@ -28,6 +28,10 @@ Your OWN twitter API Consumer Key (API Key), Consumer Secret (API Secret), Acces
 NLTK https://pypi.python.org/pypi/nltk
 Stanford NLTK http://nlp.stanford.edu/software/stanford-ner-2015-12-09.zip
   Extracted filed should go to C:\Progs\StanfordNER so that the main .jar is at C:\Progs\StanfordNER\stanford-ner.jar (alternatively, change the path on the actual code to point to whatever other directory)
+After having the NLTK, open python through a console or an IDE and do the following:
+  import nltk
+  nltk.download()
+  (Tab) Corpora -> (Row) Stopwords
 Mongo DB: https://www.mongodb.org
   the folder C:\Data\db should be available (let alone created) at all times
 Mongoclient (is recommended, yet not a prerequisite) https://github.com/rsercano/mongoclient/releases/tag/1.0.0
