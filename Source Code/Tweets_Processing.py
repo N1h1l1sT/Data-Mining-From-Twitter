@@ -91,7 +91,7 @@ def SentenceStringStrip(text):
 #Removes Special Characters from a string
 #[input: string] [output: string]
 def removeSpecialCharsFromText(text):
-    dirtyChars = [',', '.', ';', '?', '/', '\\', '`', '[', ']', '"', ':', '>', '<', '|', '-', '_', '=', '+', "#", "@"]
+    dirtyChars = [',', '.', ';', '?', '/', '\\', '`', '[', ']', '"', ':', '>', '<', '|', '-', '_', '=', '+', "#", "@", "!", "$", "%", "^", "&", "*", "(", ")"]
     for i in range(0, len(dirtyChars)):
         text = str.replace(text, dirtyChars[i], " ")
     result = SentenceStringStrip(text)
