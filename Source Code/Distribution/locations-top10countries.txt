@@ -1,0 +1,21 @@
+Countries based on Top50 Locations:
+
+Pakistan - 4039
+USA - 5114
+UK - 4203
+India - 1222
+Australia - 1146
+Canada - 422
+Worldwide/Earth - 1349
+Nigeria - 186 
+France - 184  
+Germany - 155  
+
+
+Locations based on Top10 locations:
+
+Pakistan - 2476
+USA - 2108
+London - 2045
+India - 750
+Australia - 648

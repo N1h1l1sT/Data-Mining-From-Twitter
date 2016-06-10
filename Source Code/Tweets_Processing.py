@@ -61,7 +61,10 @@ def isEnglish(text):
     except UnicodeEncodeError:
         return False
     else:
-        return True
+        if hasNumbers(text):
+            return False
+        else:
+            return True
 #Removes non English words
 #[input: string] [output: list]
 def removeNonEnglishText(text):
@@ -91,7 +94,7 @@ def SentenceStringStrip(text):
 #Removes Special Characters from a string
 #[input: string] [output: string]
 def removeSpecialCharsFromText(text):
-    dirtyChars = [',', '.', ';', '?', '/', '\\', '`', '[', ']', '"', ':', '>', '<', '|', '-', '_', '=', '+', "#", "@", "!", "$", "%", "^", "&", "*", "(", ")"]
+    dirtyChars = [',', '.', ';', '?', '/', '\\', '`', '[', ']', '"', ':', '>', '<', '|', '-', '_', '=', '+', '(', ')', '^', '{', '}', '~', '\'', '*', '&', '%', '$', '!', '@', '#']
     for i in range(0, len(dirtyChars)):
         text = str.replace(text, dirtyChars[i], " ")
     result = SentenceStringStrip(text)
@@ -114,11 +117,15 @@ def getTheNamedEntities(text):
     for tag in lstTag:
         result [str(str(tag[0])).replace('.','')] = str(tag[1])
     return result
+
+def hasNumbers(String):
+    return any(char.isdigit() for char in String)
 #endregion
 
 #region Main
 
-#region Checking if there already are data in the DB
+#region Checks
+#Checking if there already are data in the DB
 if proc_coll.count() > 0:
     print("There's already data on the proc_coll collection!!")
     pause_exit(status=0, message='Press any key to exit...')
@@ -128,7 +135,8 @@ try:
     TweetsPostTimeDistributionfile = open(DistributionDir + 'TweetsPostTimeDistribution.csv', 'w')
 
     for RawTweet in collection.find(): #in case we need to continue from a particular place in the collection, add the appropriate skip argument on find()
-        #region Acquiring basic info from the Raw Twitter JSON
+        #region InfoAcquisition
+		#Acquiring basic info from the Raw Twitter JSON
         tweet_id = RawTweet["id_str"]
         user_id = RawTweet["user"]["id_str"]
         user_screenname = "@" + RawTweet["user"]["screen_name"]
@@ -165,7 +173,8 @@ try:
             user_mentions[i] = "@" + user_mentions[i]
         #endregion
 
-        #region Cleaning & Extrapolation data
+        #region PreProcessing
+		#Cleaning & Extrapolation data
         tweet_lowercase = orig_tweet.lower()
         tweet_lowercaseList = tweet_lowercase.split(" ")
 
@@ -191,7 +200,7 @@ try:
         namedEntities = getTheNamedEntities(tweet_cleaned)
         proc_tweet = tweet_cleaned
 
-        #stemming
+        #Stemming
         textList = proc_tweet.split(' ')
         cleanWords = list()
         for word in textList:
@@ -207,7 +216,7 @@ try:
 
         #endregion
 
-        #region Data Processing for saving
+        #region SavingTheData
         #Getting the Processed Data JSON ready to be inserted into the MongoDB
         proc_data = {
                     "user_screenname": user_screenname,
@@ -231,7 +240,7 @@ try:
                     }
         #endregion
 
-        #region Saving the Data
+        #region SavingTheData
         #Inserting them to the MongoDB database
         mongo_proc_data = proc_coll.insert_one(proc_data)    #Saving Collection Processed Tweet
         #endregion

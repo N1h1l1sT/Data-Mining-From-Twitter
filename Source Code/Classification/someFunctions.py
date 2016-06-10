@@ -12,6 +12,42 @@ from nltk.tag.stanford import StanfordNERTagger
 from nltk import PorterStemmer
 import nltk
 
+
+def readTweets():
+    client = pymongo.MongoClient() #Lack of arguments defaults to localhost:27017
+    db = client['mongorefcon']
+    StemmedTweets = db['proctweets']
+
+    LDA_csv_reader = open('FilteredLDA_top100.csv')
+    procTweetsLDA = open('topicTweetsLDA.txt', 'w')
+
+    for row in LDA_csv_reader:
+        tweetID = row.replace('\n','')
+        #tweet_id = line_items[0]
+
+        print(tweetID)
+
+        for RawTweet in StemmedTweets.find({ "id": tweetID }):
+            
+            tweet_text = RawTweet['proc_tweet']
+            tweet_text = tweet_text.replace('\n', '')
+            tweet_text = tweet_text.replace('&gt;', '')
+            tweet_text = tweet_text.replace('&lt;', '')
+            tweet_text = tweet_text.replace('&amp;', '')
+            tweet_text = removeSpecialCharsFromText(tweet_text)
+
+            tweet_text = removeListItemsNew(tweet_text, "rt")
+            tweet_text = removeListItemsNew(tweet_text, "#")
+            tweet_text = removeListItemsNew(tweet_text, "http")
+            tweet_text = removeListItemsNew(tweet_text, "@")
+
+            try:
+                procTweetsLDA.write(tweet_text + '\n')
+            except:
+                procTweetsLDA.write('dumy text\n')       
+            #splitTweet = tweetText.split(' ')
+            
+
 #region Functions
 #Returns a list of words that starts with the input pattern like "#","http" etc.
 #[input: list] [output: list]
@@ -41,9 +77,17 @@ def isEnglish(text):
     except UnicodeEncodeError:
         return False
     else:
-        return True
+        if hasNumbers(text):
+            return False
+        else:
+            return True
 #Removes non English words
 #[input: string] [output: list]
+
+#Checking if a stirng includes numbers
+def hasNumbers(String):
+    return any(char.isdigit() for char in String)
+
 def removeNonEnglishText(text):
     result = list()
     words = text.strip().split(" ")
@@ -52,6 +96,7 @@ def removeNonEnglishText(text):
         if isEnglish(words[i]) == True:
             result.append(words[i])
 
+    result = ''.join(result)
     return result
 
 #Removes the list items from a text

@@ -1,0 +1,6 @@
+NaiveBayesClassifier No Term frequencies Accuracy: 0.3491827637444279
+NaiveBayesClassifier Term frequencies Accuracy: 0.3462109955423477
+NaiveBayesClassifier Term frequencies Accuracy Stemmed Data: 0.3447251114413076
+
+SVM No Term frequencies Accuracy: 0.303633472532
+SVM Term frequencies Accuracy: 0.301634472511

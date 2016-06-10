@@ -1,0 +1,8 @@
+fit_transform
+loglikelihood
+transform
+
+_fit
+_initialize
+_sample_topics
+_transform_single

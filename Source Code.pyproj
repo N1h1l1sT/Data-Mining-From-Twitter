@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{d292c1f3-920c-4279-a10a-8f7a20531a93}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>Source Code\Topic_Detection.py</StartupFile>
+    <StartupFile>Source Code\Classification\createSets.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -45,6 +45,7 @@
     <Compile Include="Source Code\Auxiliary\Legacy Code\TwitterStreamAPI_GetTweets.py" />
     <Compile Include="Source Code\Classification\createSets.py" />
     <Compile Include="Source Code\Classification\someFunctions.py" />
+    <Compile Include="Source Code\Topic_Detection_originalpy" />
     <Compile Include="Source Code\Topic_Detection.py" />
     <Compile Include="Source Code\Tweets_Processing.py" />
     <Compile Include="Source Code\Tweets_Streaming.py">
