@@ -73,27 +73,6 @@ def get_MongoDBFieldContent(collection, FieldName):
 try:
     WriteLog('.-= New LDA Iteration =-.\n', LDALogFile)
 
-    #region DistinctStemmedTweets
-    #Creating the DistinctStemmedTweets
-    WriteLog('Creating the DistinctStemmedTweets collection\n', LDALogFile)
-    doc_set1 = []
-    doc_set2 = []
-
-    for RawTweet in StemmedTweets.distinct("stemmed"):
-        try:
-            doc_set1.append(RawTweet)
-        except Exception as ex:
-            print('Print error\n' + 'Time of Error: ' + str(datetime.now()) + '\n' + str(ex) + '\n')
-            continue
-
-    for i in range(0, len(doc_set1)):
-        stemmed = doc_set1[i]
-
-        for RawTweet in StemmedTweets.find({"stemmed": stemmed}).limit(1):
-                DistinctStemmedTweets.insert_one(RawTweet)
-
-    #endregion
-
     #region LDAPreProcessessing
     WriteLog('Getting the Titles [Tweets for the Frequency Table]\n', LDALogFile)
     titles = get_MongoDBFieldContent(DistinctStemmedTweets, "stemmed") #Tweets to be used as documents for the LDA

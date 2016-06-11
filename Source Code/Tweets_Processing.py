@@ -9,7 +9,6 @@ from Functions import *
 from datetime import datetime
 from nltk import PorterStemmer
 from nltk.corpus import stopwords
-from getch import getch, pause, pause_exit
 from nltk.tag.stanford import StanfordNERTagger
 #endregion
 
@@ -30,7 +29,7 @@ client = pymongo.MongoClient() #Lack of arguments defaults to localhost:27017
 db = client['mongorefcon']
 refcrisis_coll = db['refcrisis']
 ProcessedTweets_coll = db['ProcessedTweets']
-
+DistinctStemmedTweets_coll = db['DistinctStemmedTweets']
 #endregion
 
 #region Functions
@@ -43,7 +42,11 @@ ProcessedTweets_coll = db['ProcessedTweets']
 #Checking if there already are data in the DB
 if ProcessedTweets_coll.count() > 0:
     print("There's already data on the ProcessedTweets_coll collection!!")
-    pause_exit(status=0, message='Press any key to exit...')
+    input(status=0, message='Press enter to exit...')
+#Checking if there already are data in the DistinctStemmedTweets DB
+if DistinctStemmedTweets_coll.count() > 0:
+    print("There's already data on the DistinctStemmedTweets_coll collection!!")
+    input(status=0, message='Press enter to exit...')
 #endregion
 
 try:
@@ -114,15 +117,15 @@ try:
         tweet_cleaned = removeListItemsFromText(tweet_cleaned, other_possible_user_mentions)
         #endregion
 
-        #NLP
+        #region NLP
         tweet_cleaned = removeSpecialCharsFromText(tweet_cleaned)
         tweet_cleaned = removeStopwords(tweet_cleaned, stopwords.words("english"))
         tweet_cleaned = tweet_cleaned.strip()
         namedEntities = getTheNamedEntities(tweet_cleaned, NamedEntityRecogn)
         proc_tweet = tweet_cleaned
+        #endregion
 
-
-        #Stemming
+        #region Stemming
         textList = proc_tweet.split(' ')
         cleanWords = list()
         for word in textList:
@@ -134,8 +137,6 @@ try:
             stemmedString += word + ' '
 
         stemmedTweet = stemmedString
-        #end stemming
-
         #endregion
 
         #region SavingTheData
@@ -166,11 +167,11 @@ try:
                     "proc_tweet": proc_tweet,
                     "stemmed_tweet": stemmedTweet,
                     }
-        #endregion
 
-        #region SavingTheData
         #Inserting them to the MongoDB database
         mongo_proc_data = ProcessedTweets_coll.insert_one(proc_data)    #Saving Collection Processed Tweet
+
+        #SavingTheData continues below
         #endregion
 
         TweetPostTime = datetime.strptime(created_at,'%a %b %d %X %z %Y').strftime('%d/%m/%y %X')
@@ -182,6 +183,26 @@ try:
         except Exception as ex:
             print('Print error\n' + 'Time of Error: ' + str(datetime.now()) + '\n' + str(ex) + '\n')
             continue
+
+    #SavingTheData Continues
+    #region SavingTheData
+    #Creating the DistinctStemmedTweets_coll
+    print('Creating the DistinctStemmedTweets_coll collection\n')
+    doc_set1 = []
+
+    for RawTweet in ProcessedTweets.distinct("stemmed_tweet"):
+        try:
+            doc_set1.append(RawTweet)
+        except Exception as ex:
+            print('Print error\n' + 'Time of Error: ' + str(datetime.now()) + '\n' + str(ex) + '\n')
+            continue
+
+    for i in range(0, len(doc_set1)):
+        stemmed = doc_set1[i]
+
+        for RawTweet in StemmedTweets.find({"stemmed_tweet": stemmed_tweet}).limit(1):
+                DistinctStemmedTweets_coll.insert_one(RawTweet)
+    #endregion
 
     print("The programme has finished!")
 
