@@ -5,6 +5,7 @@ import time
 import json
 import pymongo
 import encodings
+from Functions import *
 from datetime import datetime
 from nltk import PorterStemmer
 from nltk.corpus import stopwords
@@ -19,7 +20,7 @@ LogDir = "./Source Code/Logs/"
 DistributionDir = "./Source Code/Distribution/"
 StanfordNERClassifierPath = "C:\Progs\stanfordNER\classifiers\english.all.3class.distsim.crf.ser.gz"
 StanfordNERjarPath = "C:\Progs\stanfordNER\stanford-ner.jar"
-st = StanfordNERTagger(StanfordNERClassifierPath, StanfordNERjarPath)
+NamedEntityRecogn = StanfordNERTagger(StanfordNERClassifierPath, StanfordNERjarPath)
 stemmer = PorterStemmer() #Initialising the stemmer
 java_path = "C:/Program Files/Java/jdk1.8.0_92/bin"
 os.environ['JAVAHOME'] = java_path
@@ -27,114 +28,29 @@ os.environ['JAVAHOME'] = java_path
 #Connect to a MongoDB Database
 client = pymongo.MongoClient() #Lack of arguments defaults to localhost:27017
 db = client['mongorefcon']
-collection = db['refcrisis']
-proc_coll = db['ProcessedTweets']
+refcrisis_coll = db['refcrisis']
+ProcessedTweets_coll = db['ProcessedTweets']
 
 #endregion
 
 #region Functions
-#Returns a list of words that starts with the input pattern like "#","http" etc.
-#[input: list] [output: list]
-def getWordsStartingWith(words, startsWith):
-    result = list()
-    length = len(startsWith)
-    for i in range(0, len(words)):
-        word = words[i].strip()
-        if word[:length] == startsWith:
-            result.append(words[i])
-    return result
-
-#Removes the stopwords from a text (warning: the input string must be in lowercase)
-#[input: string] [output: string]
-def removeStopwords(text):
-    result = text
-    words = text.strip().split(" ")
-    stopwordsList = stopwords.words("english")
-    result = ' '.join([word for word in words if word not in stopwordsList])
-    return result
-
-#Checks whether the input is in English
-#[input: string] [output: boolean]
-def isEnglish(text):
-    try:
-        text.encode('ascii')
-    except UnicodeEncodeError:
-        return False
-    else:
-        if hasNumbers(text):
-            return False
-        else:
-            return True
-#Removes non English words
-#[input: string] [output: list]
-def removeNonEnglishText(text):
-    result = list()
-    words = text.strip().split(" ")
-
-    for i in range(0, len(words)):
-        if isEnglish(words[i]) == True:
-            result.append(words[i])
-
-    return result
-
-#Removes the list items from a text
-#[input: string] [output: string]
-def removeListItemsFromText(text, lst):
-    words = text.strip().split(" ")
-    text = ' '.join([word for word in words if word not in lst])
-    return text
-
-#Removes the superfluous space characters
-#[input: string] [output: string]
-def SentenceStringStrip(text):
-    words = text.strip().split(" ")
-    result = ' '.join(word.strip() for word in words if word.strip())
-    return result
-
-#Removes Special Characters from a string
-#[input: string] [output: string]
-def removeSpecialCharsFromText(text):
-    dirtyChars = [',', '.', ';', '?', '/', '\\', '`', '[', ']', '"', ':', '>', '<', '|', '-', '_', '=', '+', '(', ')', '^', '{', '}', '~', '\'', '*', '&', '%', '$', '!', '@', '#']
-    for i in range(0, len(dirtyChars)):
-        text = str.replace(text, dirtyChars[i], " ")
-    result = SentenceStringStrip(text)
-    return result
-
-#Replaces all the occurrences of a dictionary's name with the corresponding value
-#[input: string, dictionary] [output: string]
-def replace_all(text, dic):
-    for i, j in iter(dic.items()):
-        text = text.replace(i, j)
-    return text
-
-#Returns a list of named entities
-#[input: text] [output: dictionary]
-def getTheNamedEntities(text):
-    Clean_Text = ' '.join([word for word in text.split() if not word[:1] == '$'])
-    lstTag = st.tag(Clean_Text.split())
-
-    result = {}
-    for tag in lstTag:
-        result [str(str(tag[0])).replace('.','')] = str(tag[1])
-    return result
-
-def hasNumbers(String):
-    return any(char.isdigit() for char in String)
+#Moved to Functions.py
 #endregion
 
 #region Main
 
 #region Checks
 #Checking if there already are data in the DB
-if proc_coll.count() > 0:
-    print("There's already data on the proc_coll collection!!")
+if ProcessedTweets_coll.count() > 0:
+    print("There's already data on the ProcessedTweets_coll collection!!")
     pause_exit(status=0, message='Press any key to exit...')
 #endregion
 
 try:
     TweetsPostTimeDistributionfile = open(DistributionDir + 'TweetsPostTimeDistribution.csv', 'w')
+    curIndex = 0
 
-    for RawTweet in collection.find(): #in case we need to continue from a particular place in the collection, add the appropriate skip argument on find()
+    for RawTweet in refcrisis_coll.find(): #in case we need to continue from a particular place in the collection, add the appropriate skip argument on find()
         #region InfoAcquisition
 		#Acquiring basic info from the Raw Twitter JSON
         tweet_id = RawTweet["id_str"]
@@ -142,13 +58,16 @@ try:
         user_screenname = "@" + RawTweet["user"]["screen_name"]
         created_at = RawTweet["created_at"]
         timestamp_ms = RawTweet["timestamp_ms"]
+        profile_image_url = RawTweet["user"]["profile_image_url"]
         in_reply_to_status_id_str = RawTweet["in_reply_to_status_id_str"]
         in_reply_to_user_id_str = RawTweet["in_reply_to_user_id_str"]
         in_reply_to_screen_name = RawTweet["in_reply_to_screen_name"]
         friends_count = RawTweet["user"]["friends_count"]
         followers_count = RawTweet["user"]["followers_count"]
         statuses_count = RawTweet["user"]["statuses_count"]
-        lang = RawTweet["user"]["lang"]
+        user_language = RawTweet["user"]["lang"]
+        tweet_language = RawTweet["lang"]
+        User_Location = RawTweet["user"]["location"]
         orig_tweet = RawTweet["text"]
 
         tempURLs = RawTweet["entities"]["urls"]
@@ -179,11 +98,13 @@ try:
         tweet_lowercaseList = tweet_lowercase.split(" ")
 
         is_retweet = tweet_lowercase[:2] == "rt"
+        retweeted_from_screenname = getRetweetedFromScreenname(orig_tweet)
 
         CleanURLs = getWordsStartingWith(tweet_lowercaseList, "http:")
         CleanURLs += getWordsStartingWith(tweet_lowercaseList, "https:")
 
-        tweet_cleaned = removeListItemsFromText(tweet_lowercase, "rt ")
+        tweet_cleaned = " ".join([word for word in removeNonEnglishText(tweet_lowercase)])
+        tweet_cleaned = removeListItemsFromText(tweet_cleaned, "rt ")
         tweet_cleaned = removeListItemsFromText(tweet_cleaned, hashtags)
         tweet_cleaned = removeListItemsFromText(tweet_cleaned, CleanURLs)
         tweet_cleaned = removeListItemsFromText(tweet_cleaned, user_mentions)
@@ -193,12 +114,13 @@ try:
         tweet_cleaned = removeListItemsFromText(tweet_cleaned, other_possible_user_mentions)
         #endregion
 
-        #region NLP
+        #NLP
         tweet_cleaned = removeSpecialCharsFromText(tweet_cleaned)
-        tweet_cleaned = removeStopwords(tweet_cleaned)
+        tweet_cleaned = removeStopwords(tweet_cleaned, stopwords.words("english"))
         tweet_cleaned = tweet_cleaned.strip()
-        namedEntities = getTheNamedEntities(tweet_cleaned)
+        namedEntities = getTheNamedEntities(tweet_cleaned, NamedEntityRecogn)
         proc_tweet = tweet_cleaned
+
 
         #Stemming
         textList = proc_tweet.split(' ')
@@ -219,37 +141,44 @@ try:
         #region SavingTheData
         #Getting the Processed Data JSON ready to be inserted into the MongoDB
         proc_data = {
-                    "user_screenname": user_screenname,
-                    "user_id": user_id,
                     "tweet_id": tweet_id,
+                    "user_id": user_id,
+                    "user_screenname": user_screenname,
                     "created_at": created_at,
                     "timestamp_ms": timestamp_ms,
                     "is_retweet": is_retweet,
+                    "retweeted_from_screenname": retweeted_from_screenname,
+                    "profile_image_url": profile_image_url,
                     "in_reply_to_status_id_str": in_reply_to_status_id_str,
                     "in_reply_to_user_id_str": in_reply_to_user_id_str,
                     "in_reply_to_screen_name": in_reply_to_screen_name,
                     "friends_count": friends_count,
                     "followers_count": followers_count,
                     "statuses_count": statuses_count,
+                    "user_language": user_language,
+                    "tweet_language": tweet_language,
+                    "User_Location": User_Location,
+                    "orig_tweet": orig_tweet,
                     "urls": urls,
                     "hashtags": hashtags,
                     "user_mantions": user_mentions,
                     "namedEntities": namedEntities,
                     "proc_tweet": proc_tweet,
-                    "stemmed_tweet": stemmedTweet
+                    "stemmed_tweet": stemmedTweet,
                     }
         #endregion
 
         #region SavingTheData
         #Inserting them to the MongoDB database
-        mongo_proc_data = proc_coll.insert_one(proc_data)    #Saving Collection Processed Tweet
+        mongo_proc_data = ProcessedTweets_coll.insert_one(proc_data)    #Saving Collection Processed Tweet
         #endregion
 
         TweetPostTime = datetime.strptime(created_at,'%a %b %d %X %z %Y').strftime('%d/%m/%y %X')
         TweetsPostTimeDistributionfile.write(tweet_id + "," + TweetPostTime + "\n")
 
         try:
-            print(orig_tweet)
+            curIndex += 1
+            print(curIndex)
         except Exception as ex:
             print('Print error\n' + 'Time of Error: ' + str(datetime.now()) + '\n' + str(ex) + '\n')
             continue

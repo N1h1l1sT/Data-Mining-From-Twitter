@@ -22,46 +22,32 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Source Code\Auxiliary\Keywords.txt" />
-    <Content Include="Source Code\Auxiliary\MongoDB_Connection_Settings.jpg" />
-    <Content Include="Source Code\Auxiliary\Prerequisites.txt" />
-    <Content Include="Source Code\Classification\Anotations.txt" />
-    <Content Include="Source Code\Classification\__pycache__\someFunctions.cpython-35.pyc" />
     <Content Include="Source Code\Distribution\datefile.csv" />
     <Content Include="Source Code\Distribution\datefile.xlsx" />
     <Content Include="Source Code\Distribution\datefile2.csv" />
+    <Content Include="Source Code\Distribution\datefile_users.xlsx" />
+    <Content Include="Source Code\Distribution\hashtags.txt" />
+    <Content Include="Source Code\Distribution\locations-top10countries.txt" />
+    <Content Include="Source Code\Distribution\locations.txt" />
+    <Content Include="Source Code\Distribution\top1000hashtags.txt" />
+    <Content Include="Source Code\Distribution\usernames.txt" />
     <Content Include="Source Code\Logs\LDA.Log" />
-    <Content Include="Source Code\Logs\Streaming_APIAuthenticating_Problems.txt" />
-    <Content Include="Source Code\Logs\Streaming_Listener_Problems.txt" />
-    <Content Include="Source Code\Logs\Streaming_Main_Problems.txt" />
-    <Content Include="Source Code\Logs\TweetProcessing_Problems.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source Code\Auxiliary\Legacy Code\Find_BurstEvents.py" />
-    <Compile Include="Source Code\Auxiliary\Legacy Code\index.py" />
-    <Compile Include="Source Code\Auxiliary\Legacy Code\Part2_functions.py" />
-    <Compile Include="Source Code\Auxiliary\Legacy Code\stemming.py" />
-    <Compile Include="Source Code\Auxiliary\Legacy Code\TweetsAsCollections.py" />
-    <Compile Include="Source Code\Auxiliary\Legacy Code\TwitterStreamAPI_GetTweets.py" />
-    <Compile Include="Source Code\Classification\createSets.py" />
-    <Compile Include="Source Code\Classification\someFunctions.py" />
-    <Compile Include="Source Code\Topic_Detection_originalpy" />
+    <Compile Include="Source Code\AffAnalys.py" />
+    <Compile Include="Source Code\Functions.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Source Code\Topic_Detection.py" />
     <Compile Include="Source Code\Tweets_Processing.py" />
     <Compile Include="Source Code\Tweets_Streaming.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Source Code\Tweets_Processing_tmp.py">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Source Code\" />
-    <Folder Include="Source Code\Auxiliary\" />
-    <Folder Include="Source Code\Auxiliary\Legacy Code\" />
-    <Folder Include="Source Code\Classification\" />
-    <Folder Include="Source Code\Classification\__pycache__\" />
     <Folder Include="Source Code\Distribution\" />
+    <Folder Include="Source Code\LDA\" />
     <Folder Include="Source Code\Logs\" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,21 @@
+Main error
+Time of Error: 2016-06-10 21:43:19.818682
+localhost:27017: [WinError 10061] No connection could be made because the target machine actively refused it
+Main error
+Time of Error: 2016-06-10 21:43:39.452592
+E11000 duplicate key error collection: mongorefcon.DistinctStemmedTweets index: _id_ dup key: { : ObjectId('5746c53553377c4f48d5c012') }
+Main error
+Time of Error: 2016-06-10 21:44:48.742793
+E11000 duplicate key error collection: mongorefcon.DistinctStemmedTweets index: _id_ dup key: { : ObjectId('5746c53553377c4f48d5c012') }
+Main error
+Time of Error: 2016-06-10 21:47:46.608817
+E11000 duplicate key error collection: mongorefcon.DistinctStemmedTweets index: _id_ dup key: { : ObjectId('5746c53553377c4f48d5c012') }
+Main error
+Time of Error: 2016-06-10 22:56:52.770377
+list index out of range
+Main error
+Time of Error: 2016-06-10 23:02:52.409443
+list index out of range
+Main error
+Time of Error: 2016-06-10 23:10:55.212608
+list index out of range

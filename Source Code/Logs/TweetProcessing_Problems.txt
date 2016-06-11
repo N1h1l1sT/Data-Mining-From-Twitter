@@ -25,3 +25,6 @@ name 'user_mentions' is not defined
 Main error
 Time of Error: 2016-05-26 18:41:44.934526
 name 'user_screenname' is not defined
+Main error
+Time of Error: 2016-06-11 00:59:11.167206
+name 'getWordsStartingWith' is not defined

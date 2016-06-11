@@ -12,11 +12,12 @@ import csv
 #region Initialisation
 LogDir = "./Source Code/Logs/"
 LDADir = "./Source Code/LDA/"
-LDACsvFile = 'LDA.csv'
 LDALogFile = 'LDA.log'
+LDACsvFile = 'LDA.csv'
 OrderedLDACsv = 'OrderedLDA.csv'
 FilteredLDATop10Csv = 'FilteredLDA_top10.csv'
 FilteredLDATop100Csv = 'FilteredLDA_top100.csv'
+FilteredLDATweetsCsv = 'FilteredLDA_Tweets.csv'
 
 #Connect to a MongoDB Database
 client = pymongo.MongoClient() #Lack of arguments defaults to localhost:27017
@@ -26,12 +27,6 @@ DistinctStemmedTweets = db['DistinctStemmedTweets']
 #endregion
 
 #region Functions
-def WriteLog(text):
-    LDA_Log_Write = open(LogDir + LDALogFile, 'a')
-    LDA_Log_Write.write(text)
-    LDA_Log_Write.close()
-    print(text)
-
 def get_vocabulary(doc_set):
     tokenizer = RegexpTokenizer(r'\w+')
     distinctwords = {}
@@ -42,9 +37,8 @@ def get_vocabulary(doc_set):
         tokens = tokenizer.tokenize(raw)
         for word in tokens:
             if word not in distinctwords:
-                #distinctwords.append(word)
                 distinctwords[word] = i
-                i = i + 1
+                i += 1
     return distinctwords
 
 def get_frequency_table(titles, vocab):
@@ -60,12 +54,12 @@ def get_frequency_table(titles, vocab):
     return freqtable
 
 
-def get_titles(collection, TweetTextFieldName):
-    doc_set = []
+def get_MongoDBFieldContent(collection, FieldName):
     try:
+        doc_set = []
         for RawTweet in collection.find(): #.limit(1000): #in case we need to continue from a particular place in the collection, add the appropriate skip argument on find()
             try:
-                tmpTweet = RawTweet[TweetTextFieldName]
+                tmpTweet = RawTweet[FieldName]
                 doc_set.append(tmpTweet)
             except Exception as ex:
                 print('Print error\n' + 'Time of Error: ' + str(datetime.now()) + '\n' + str(ex) + '\n')
@@ -77,10 +71,11 @@ def get_titles(collection, TweetTextFieldName):
 
 #region Main
 try:
-    WriteLog('.-= New LDA Iteration =-.\nGetting the Titles\n')
+    WriteLog('.-= New LDA Iteration =-.\n', LDALogFile)
 
     #region DistinctStemmedTweets
     #Creating the DistinctStemmedTweets
+    WriteLog('Creating the DistinctStemmedTweets collection\n', LDALogFile)
     doc_set1 = []
     doc_set2 = []
 
@@ -100,39 +95,38 @@ try:
     #endregion
 
     #region LDAPreProcessessing
-    titles = get_titles(DistinctStemmedTweets, "stemmed") #Tweets to be used as documents for the LDA
-    ids = get_titles(DistinctStemmedTweets, "id")  #IDs of each tweet
+    WriteLog('Getting the Titles [Tweets for the Frequency Table]\n', LDALogFile)
+    titles = get_MongoDBFieldContent(DistinctStemmedTweets, "stemmed") #Tweets to be used as documents for the LDA
+    WriteLog("Getting the Tweets's IDs\n", LDALogFile)
+    ids = get_MongoDBFieldContent(DistinctStemmedTweets, "id")  #IDs of each tweet
 
-    WriteLog('Creating the Vocabulary\n')
+    WriteLog('Creating the Vocabulary [Frequencies of words for each tweet]\n', LDALogFile)
     vocab = get_vocabulary(titles) #Distinct words
 
-    WriteLog('Creating the Frequency Table\n')
+    WriteLog('Creating the Frequency Table [Titles times by Vocabulary size array with each tweet as a raw, each word as a column and #word occurance as value]\n', LDALogFile)
     freqtable = get_frequency_table(titles, vocab) #tweets times by distinct words
     #endregion
 
     #region LDA
-    WriteLog('Running the LDA\n')
+    WriteLog('Running the LDA\n', LDALogFile)
     nof_topics = 25
     n_iter = 1000
     random_state = 1
-    WriteLog("nof_topics = " + str(nof_topics) + "\n" + "n_topics = " + str(nof_topics) +  "\n" + "random_state = " + str(random_state) + "\n")
+    WriteLog("nof_topics = " + str(nof_topics) + "\n" + "n_topics = " + str(nof_topics) +  "\n" + "random_state = " + str(random_state) + "\n", LDALogFile)
 
-    WriteLog("Creating the Model\n")
+    WriteLog("Creating the Model\n", LDALogFile)
     model = lda.LDA(n_topics = nof_topics, n_iter = 1000, random_state = 1)
 
-    WriteLog("Fitting the Frequency Table\n")
+    WriteLog("Fitting the Frequency Table\n", LDALogFile)
     doc_topic = model.fit_transform(freqtable)
 
-    WriteLog("Getting topic_word\n")
+    WriteLog("Getting topic_word\n", LDALogFile)
     topic_word = model.topic_word_  # model.components_ also works
 
     n_top_words = 10
-    WriteLog("n_top_words = " + str(n_top_words) + "\n")
+    WriteLog("n_top_words = " + str(n_top_words) + "\n", LDALogFile)
 
-    WriteLog("Creating the Vocabulary\n")
-    vocabl = list(vocab.keys())
-
-    LDA_csv = open(LDADir + LDACsvFile, 'a')
+    LDA_csv = open(LDADir + LDACsvFile, 'w')
 
     #unordered csv with columns: TweetID, TopicID, LDA-Given-Weight
     #is manually order by topic and by weight (e.g. via Excel)
@@ -147,10 +141,10 @@ try:
 
     #region OrderedIdList
     #Extracting the Top 100 Tweet ID per topic (found by LDA) to be used for Classification
-    input("Order the ID List'" + LDACsvFile + "' by topic and by weight and save it as '" + OrderedLDACsv + "'")
+    input("Order the ID List of the '" + LDACsvFile + "' file by topic and by weight and save it as '" + OrderedLDACsv + "'")
     LDA_csv_reader = open(LDADir + OrderedLDACsv)
-    LDA_csv_writer1 = open(LDADir + FilteredLDATop10Csv, 'a')
-    LDA_csv_writer2 = open(LDADir + FilteredLDATop100Csv, 'a')
+    LDA_csv_writer1 = open(LDADir + FilteredLDATop10Csv, 'w')
+    LDA_csv_writer2 = open(LDADir + FilteredLDATop100Csv, 'w')
 
     read_count = 0
     topic_id = 0
@@ -183,7 +177,7 @@ try:
     #region ReadTweets
     #'Topic ID, Original Tweet Text' used for manual topic comprehension
     LDA_csv_reader = open(LDADir + FilteredLDATop10Csv)
-    LDA_csv_writer = open(LDADir + 'FilteredLDA_Tweets.csv', 'a')
+    LDA_csv_writer = open(LDADir + FilteredLDATweetsCsv, 'w')
 
     for row in LDA_csv_reader:
         line_items = row.replace('\n','').split('\t')
@@ -196,8 +190,7 @@ try:
     LDA_csv_writer.close()
     #endregion
 
-    WriteLog('Finished successfully\n\n\n')
-    print("Press any key to terminate.")
+    WriteLog('Finished successfully\n\n\n', LDALogFile)
 
 except Exception as e:
     eMessage = 'Main error\n' + 'Time of Error: ' + str(datetime.now()) + '\n' + str(e) + '\n'

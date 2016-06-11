@@ -15,6 +15,8 @@ from nltk.tag.stanford import StanfordNERTagger
 #region Initialisation
 
 #Setting (environmental) variables
+LogDir = "./Source Code/Logs/"
+DistributionDir = "./Source Code/Distribution/"
 StanfordNERClassifierPath = "C:\Progs\stanfordNER\classifiers\english.all.3class.distsim.crf.ser.gz"
 StanfordNERjarPath = "C:\Progs\stanfordNER\stanford-ner.jar"
 st = StanfordNERTagger(StanfordNERClassifierPath, StanfordNERjarPath)
@@ -122,18 +124,20 @@ def hasNumbers(String):
 
 #region Main
 
-#region Checking if there already are data in the DB
+#region Checks
+#Checking if there already are data in the DB
 if ProcessedTweets_coll.count() > 0:
     print("There's already data on the ProcessedTweets_coll collection!!")
     pause_exit(status=0, message='Press any key to exit...')
 #endregion
 
 try:
-    TweetsPostTimeDistributionfile = open('TweetsPostTimeDistribution.csv', 'a')
+    TweetsPostTimeDistributionfile = open(DistributionDir + 'TweetsPostTimeDistribution.csv', 'w')
     curIndex = 0
 
     for RawTweet in proctweets_coll.find(): #in case we need to continue from a particular place in the collection, add the appropriate skip argument on find()
-        #region Acquiring basic info from the Raw Twitter JSON
+        #region InfoAcquisition
+		#Acquiring basic info from the Raw Twitter JSON
         username = RawTweet["username"]
         tweet_id = RawTweet["id"]
         created_at = RawTweet["datetime"]
@@ -145,7 +149,8 @@ try:
         user_mentions = RawTweet["Mentions"]
         #endregion
 
-        #region Cleaning & Extrapolation data
+        #region PreProcessing
+		#Cleaning & Extrapolation data
         tweet_lowercase = orig_tweet.lower()
         tweet_lowercaseList = tweet_lowercase.split(" ")
 
@@ -188,7 +193,7 @@ try:
 
         #endregion
 
-        #region Data Processing for saving
+        #region SavingTheData
         #Getting the Processed Data JSON ready to be inserted into the MongoDB
         proc_data = {
                     "tweet_id": tweet_id,
@@ -216,7 +221,6 @@ try:
         try:
             curIndex += 1
             print(curIndex)
-            #print(orig_tweet)
         except Exception as ex:
             print('Print error\n' + 'Time of Error: ' + str(datetime.now()) + '\n' + str(ex) + '\n')
             continue
@@ -226,7 +230,7 @@ try:
 except Exception as e:
     eMessage = 'Main error\n' + 'Time of Error: ' + str(datetime.now()) + '\n' + str(e) + '\n'
     print (str(eMessage))
-    saveFile = open('TweetProcessing_Problems.txt', 'a')
+    saveFile = open(LogDir + 'TweetProcessing_Problems.txt', 'a')
     saveFile.write(eMessage)
     saveFile.close()
 #endregion
