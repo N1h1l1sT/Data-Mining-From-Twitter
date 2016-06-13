@@ -9,23 +9,25 @@ Refugee Crisis: A Twitter-based Event Summarisation.
 This project was created in the context of the M.Sc Course Data Mining and Information Retrieval on the Web of the Informatics Department of the Aristotle University of Thessaloniki
 
 ## Categories
-1. Streaming from Twitter by Tweets_Streaming.py
-2. Preprocessing of Data by Tweets_Processing.py
-3. Event Summarisation by Topic_Detection.py
+1. Streaming from Twitter by Streaming.py
+2. Preprocessing the Data by Processing.py
+3. Event Detection (LDA) by TopicDet.py
+4. Affective Analysis (Machine Learning Classification) by AffAnalys.py
 
 ## Prerequisites
 ### Python
 In order to run this programme one need already have:
 
-* twitter-text-python (pip install twitter-text-python)
 * tweepy (pip install tweepy)
 * pymongo (pip install pymongo)
-* py-getch (pip install py-getch) - Not really needed - safe to just comment out the getch lines if one can't install this prerequisite
+* NumPy, Downloadable from http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy (pip install {path_to_the_file})
+* SciPy, Downloadable from http://www.edna-site.org/pub/wheelhouse (pip install {path_to_the_file})
+* SciKit-Learn (pip install scikit-learn)
 
 ### Other
 * Your OWN twitter API Consumer Key (API Key), Consumer Secret (API Secret), Access Token, and Access Token Secret https://apps.twitter.com/app/new
 * NLTK https://pypi.python.org/pypi/nltk
-* Stanford NLTK http://nlp.stanford.edu/software/stanford-ner-2015-12-09.zip
+* Stanford NLTK http://nlp.stanford.edu/software/CRF-NER.shtml#History
   Extracted filed should go to C:\Progs\StanfordNER so that the main .jar is at C:\Progs\StanfordNER\stanford-ner.jar (alternatively, change the path on the actual code to point to whatever other directory)
 * After having the NLTK, open python through a console or an IDE and do the following:
 ```python
@@ -36,4 +38,5 @@ From (Tab) Corpora, go to -> (Row) Stopwords, and download them
 
 * Mongo DB: https://www.mongodb.org
   the folder C:\Data\db should be available (let alone created) at all times
-* Mongoclient (is recommended, yet not a prerequisite) https://github.com/rsercano/mongoclient/releases/tag/1.0.0
+  run "mongod"
+* Mongoclient (is recommended, yet not a prerequisite) https://github.com/rsercano/mongoclient/releases
