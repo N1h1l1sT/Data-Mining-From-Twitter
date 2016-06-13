@@ -25,11 +25,11 @@ java_path = "C:/Program Files/Java/jdk1.8.0_92/bin"
 os.environ['JAVAHOME'] = java_path
 
 #Connect to a MongoDB Database
-client = pymongo.MongoClient() #Lack of arguments defaults to localhost:27017
-db = client['mongorefcon']
-refcrisis_coll = db['refcrisis']
-ProcessedTweets_coll = db['ProcessedTweets']
-DistinctStemmedTweets_coll = db['DistinctStemmedTweets']
+MongoDBCon = pymongo.MongoClient() #Lack of arguments defaults to localhost:27017
+MongoDBDatabase = MongoDBCon['RefugeeCrisisCon']
+RawTweetsJSON_coll = MongoDBDatabase['RawTweetsJSON']
+ProcessedTweets_coll = MongoDBDatabase['ProcessedTweets']
+DistinctTweets_coll = MongoDBDatabase['DistinctTweets']
 #endregion
 
 #region Functions
@@ -41,19 +41,23 @@ DistinctStemmedTweets_coll = db['DistinctStemmedTweets']
 #region Checks
 #Checking if there already are data in the DB
 if ProcessedTweets_coll.count() > 0:
-    print("There's already data on the ProcessedTweets_coll collection!!")
-    input(status=0, message='Press enter to exit...')
-#Checking if there already are data in the DistinctStemmedTweets DB
-if DistinctStemmedTweets_coll.count() > 0:
-    print("There's already data on the DistinctStemmedTweets_coll collection!!")
-    input(status=0, message='Press enter to exit...')
+    print("There's already data in the ProcessedTweets_coll collection!!")
+    input('Press enter to exit...')
+    sys.exit()
+
+#Checking if there already are data in the DistinctTweets DB
+if DistinctTweets_coll.count() > 0:
+    print("There's already data in the DistinctTweets_coll collection!!")
+    input('Press enter to exit...')
+    sys.exit()
 #endregion
 
 try:
     TweetsPostTimeDistributionfile = open(DistributionDir + 'TweetsPostTimeDistribution.csv', 'w')
     curIndex = 0
+    #FindFilter = {"id_str": "724346146286649345"}
 
-    for RawTweet in refcrisis_coll.find(): #in case we need to continue from a particular place in the collection, add the appropriate skip argument on find()
+    for RawTweet in RawTweetsJSON_coll.find(): #in case we need to continue from a particular place in the collection, add the appropriate skip method after find()
         #region InfoAcquisition
 		#Acquiring basic info from the Raw Twitter JSON
         tweet_id = RawTweet["id_str"]
@@ -107,7 +111,6 @@ try:
         CleanURLs += getWordsStartingWith(tweet_lowercaseList, "https:")
 
         tweet_cleaned = " ".join([word for word in removeNonEnglishText(tweet_lowercase)])
-        tweet_cleaned = removeListItemsFromText(tweet_cleaned, "rt ")
         tweet_cleaned = removeListItemsFromText(tweet_cleaned, hashtags)
         tweet_cleaned = removeListItemsFromText(tweet_cleaned, CleanURLs)
         tweet_cleaned = removeListItemsFromText(tweet_cleaned, user_mentions)
@@ -115,6 +118,8 @@ try:
         for i in range(0, len(user_mentions)):
             other_possible_user_mentions[i] = user_mentions[i] + ":"
         tweet_cleaned = removeListItemsFromText(tweet_cleaned, other_possible_user_mentions)
+        tweet_cleaned = eraseListItemsFromText(tweet_cleaned, ["rt ", "&gt;", "&lt;", "&amp;", "http"])
+        tweet_cleaned = tweet_cleaned.replace("\n", " ").replace("\r", " ")
         #endregion
 
         #region NLP
@@ -186,11 +191,11 @@ try:
 
     #SavingTheData Continues
     #region SavingTheData
-    #Creating the DistinctStemmedTweets_coll
-    print('Creating the DistinctStemmedTweets_coll collection\n')
+    #Creating the DistinctTweets_coll
+    print('Creating the DistinctTweets_coll collection\n')
     doc_set1 = []
 
-    for RawTweet in ProcessedTweets.distinct("stemmed_tweet"):
+    for RawTweet in ProcessedTweets_coll.distinct("stemmed_tweet"):
         try:
             doc_set1.append(RawTweet)
         except Exception as ex:
@@ -200,8 +205,8 @@ try:
     for i in range(0, len(doc_set1)):
         stemmed = doc_set1[i]
 
-        for RawTweet in StemmedTweets.find({"stemmed_tweet": stemmed_tweet}).limit(1):
-                DistinctStemmedTweets_coll.insert_one(RawTweet)
+        for RawTweet in ProcessedTweets_coll.find({"stemmed_tweet": stemmed}).limit(1):
+                DistinctTweets_coll.insert_one(RawTweet)
     #endregion
 
     print("The programme has finished!")

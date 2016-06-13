@@ -1,1 +1,337 @@
 
+Time of Error: 2016-06-11 15:05:24.658473
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:25.164024
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:25.672103
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:26.179601
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:26.687248
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:27.193532
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:27.700595
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:28.208551
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:28.718658
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:29.224196
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:29.731574
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:30.238138
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:30.746333
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:31.254138
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:31.761294
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:32.269477
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:32.774981
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:33.281571
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:33.795435
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:34.301041
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:34.805963
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:35.311335
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:35.818685
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:36.325964
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:36.831113
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:37.336406
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:37.844211
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:38.353234
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:38.859739
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:39.366239
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:39.872611
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:40.379687
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:40.887970
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:41.394722
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:41.902003
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:42.409802
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:42.915043
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:43.427081
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:43.933791
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:44.446738
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:44.966535
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:45.473349
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:45.978922
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:46.483445
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:46.997440
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:47.502211
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:48.013507
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:48.520550
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:49.029069
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:49.540082
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:50.048006
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:50.554190
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:51.065699
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:51.573363
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:52.080363
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:52.586310
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:53.094309
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:53.602522
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:54.112509
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:54.617736
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:55.122564
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:55.629527
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:56.142854
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:56.650625
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:57.156624
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:57.669897
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:58.176600
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:58.694099
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:59.202196
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:05:59.709200
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:00.223699
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:00.733698
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:01.242124
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:01.748196
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:02.252732
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:02.758065
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:03.268441
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:03.780447
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:04.287134
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:04.799161
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:05.305738
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:05.810992
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:06.317168
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:06.822399
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:07.329610
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:07.835601
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:08.341799
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:08.846621
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:09.351230
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:09.862247
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:10.367776
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:10.876697
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:11.381314
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:11.885932
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:12.395506
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:12.901850
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:13.410882
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:13.916456
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:14.424089
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:14.943957
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:15.449303
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:15.956501
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:16.463538
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:16.971537
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:17.479228
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:17.985448
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:18.492447
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:19.001966
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:19.506836
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:20.031466
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:20.536110
+name 'true' is not defined
+
+Time of Error: 2016-06-11 15:06:21.043925
+name 'true' is not defined
+

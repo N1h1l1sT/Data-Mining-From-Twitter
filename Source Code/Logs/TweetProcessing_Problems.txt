@@ -28,3 +28,30 @@ name 'user_screenname' is not defined
 Main error
 Time of Error: 2016-06-11 00:59:11.167206
 name 'getWordsStartingWith' is not defined
+Main error
+Time of Error: 2016-06-11 15:48:44.836761
+name 'ProcessedTweets' is not defined
+Main error
+Time of Error: 2016-06-11 15:56:07.514725
+name 'StemmedTweets' is not defined
+Main error
+Time of Error: 2016-06-11 15:57:01.818110
+name 'StemmedTweets' is not defined
+Main error
+Time of Error: 2016-06-11 15:58:21.680229
+name 'stemmed_tweet' is not defined
+Main error
+Time of Error: 2016-06-11 21:44:38.752559
+filter must be an instance of dict, bson.son.SON, or other type that inherits from collections.Mapping
+Main error
+Time of Error: 2016-06-11 21:45:29.095556
+filter must be an instance of dict, bson.son.SON, or other type that inherits from collections.Mapping
+Main error
+Time of Error: 2016-06-11 21:46:30.269971
+name 'tweet_id' is not defined
+Main error
+Time of Error: 2016-06-11 21:47:50.733866
+E11000 duplicate key error collection: RefugeeCrisisCon.DistinctTweets index: _id_ dup key: { : ObjectId('575c04d153377c2da01ed4f9') }
+Main error
+Time of Error: 2016-06-11 21:49:14.917865
+E11000 duplicate key error collection: RefugeeCrisisCon.DistinctTweets index: _id_ dup key: { : ObjectId('575c04d153377c2da01ed4f9') }

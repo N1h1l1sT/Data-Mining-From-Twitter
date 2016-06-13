@@ -2,9 +2,17 @@ LogDir = "./Source Code/Logs/"
 
 #region Functions
 def WriteLog(text, LogFileName):
-    LDA_Log_Write = open(LogDir + LogFileName, 'a')
-    LDA_Log_Write.write(text)
-    LDA_Log_Write.close()
+    if text != None:
+        LDA_Log_Write = open(LogDir + LogFileName, 'a')
+        LDA_Log_Write.write("\n")
+        try:
+            LDA_Log_Write.write(text)
+        except:
+            try:
+                LDA_Log_Write.write("\n".join(text))
+            except:
+                LDA_Log_Write.write("Error: non-writable Content")
+        LDA_Log_Write.close()
     print(text)
 
 #Removes the TextToRemove from a text
@@ -62,6 +70,11 @@ def removeNonEnglishText(text):
 def removeListItemsFromText(text, lst):
     words = SentenceStringStrip(text).split(" ")
     text = ' '.join([word for word in words if word not in lst])
+    return text
+
+def eraseListItemsFromText(text, lst):
+    for item in lst:
+        text = text.replace(item, "")
     return text
 
 #Removes the superfluous space characters

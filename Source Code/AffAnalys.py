@@ -1,8 +1,11 @@
 #region Imports
 import os
 import sys
+import csv
 import time
 import json
+import nltk
+import pymongo
 import encodings
 from Functions import *
 from datetime import datetime
@@ -10,7 +13,6 @@ from nltk.corpus import stopwords
 from nltk.tag.stanford import StanfordNERTagger
 from nltk import PorterStemmer
 from collections import Counter
-import pdb
 from nltk.classify import SklearnClassifier
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.svm import SVC
@@ -25,15 +27,17 @@ topicTweetsLDATxt = CurDir + "AffectiveAnalysis/topicTweetsLDA.txt"
 NBtopicResultsTxt = CurDir + "AffectiveAnalysis/NB_topicResults.txt"
 DTtopicResultsTxt = CurDir + "AffectiveAnalysis/DT_topicResults.txt"
 SVMtopicResultsTxt = CurDir + "AffectiveAnalysis/SVM_topicResults.txt"
-AnotationsTxt = CurDir + "AffectiveAnalysis/Anotations.txt"
+AnnotationsTxt = CurDir + "AffectiveAnalysis/Annotations.txt"
+AnnotationsProcessedTxt = CurDir + "AffectiveAnalysis/AnnotationsProcessed.txt"
+AnnotationsStemmedTxt = CurDir + "AffectiveAnalysis/AnnotationsStemmed.txt"
 ClassificationLogFile = 'Classification.log'
 stemmer = PorterStemmer()
 bigList = list()
 
 #Connect to a MongoDB Database
-client = pymongo.MongoClient() #Lack of arguments defaults to localhost:27017
-db = client['mongorefcon']
-StemmedTweets = db['StemmedTweets']
+MongoDBCon = pymongo.MongoClient() #Lack of arguments defaults to localhost:27017
+MongoDBDatabase = MongoDBCon['RefugeeCrisisCon']
+ProcessedTweets_coll = MongoDBDatabase['ProcessedTweets']
 #endregion
 
 #region Functions
@@ -54,7 +58,7 @@ def get_word_features(wordlist):
 def DoClassify(CurClassifier, topicResultsTxt, topicTweetsLDATxt):
     counter = 0
     topicSentiments = dict()
-    topicResult = open(topicResultstxt, 'w')
+    topicResult = open(topicResultsTxt, 'w')
     with open(topicTweetsLDATxt) as topicFile:
         for line in topicFile:
             if counter != 100:
@@ -80,7 +84,7 @@ def DoClassify(CurClassifier, topicResultsTxt, topicTweetsLDATxt):
 
     topicResult.close()
 
-#Extracting the features of the tweet without term frequencies
+#Extracting the features of the tweet without term frequencies with the format as needed by the classifier
 def extract_features(document):
     document_words = set(document)
     features = {}
@@ -88,7 +92,7 @@ def extract_features(document):
         features['contains(%s)' % word] = (word in document_words)
     return features
 
-#Extracting the features of the tweet with term frequencies
+#Extracting the features of the tweet with term frequencies with the format as needed by the classifier
 def extract_featuresFreq(document):
 	document_words = set(document)
 	freqs = Counter(document)
@@ -102,165 +106,190 @@ def extract_featuresFreq(document):
 #endregion
 
 #region Main
+try:
+    WriteLog('.-= New Classification Iteration =-.\n', ClassificationLogFile)
 
-#region TrainingPreProcessing
+    #region TrainingPreProcessing
+    WriteLog("Beginning new Classification Iteration", ClassificationLogFile)
 
-#Reads and processes the topics' tweets
-print("Reading and processing the topics' tweets")
-LDA_csv_reader = open(FilteredLDAtop100Csv)
-procTweetsLDA = open(topicTweetsLDATxt, 'w')
-for row in LDA_csv_reader:
-    tweetID = row.replace('\n','')
+    ##Reads and saves each topic's top 100 tweets
+    #WriteLog("Reading and processing the topics' tweets", ClassificationLogFile)
+    #LDA_csv_reader = open(FilteredLDAtop100Csv)
+    #procTweetsLDA = open(topicTweetsLDATxt, 'w')
+    #for tweet_id in LDA_csv_reader:
+    #    tweet_id = tweet_id.replace("\n", "")
+    #    TweetJSON = ProcessedTweets_coll.find_one({ "tweet_id": tweet_id })
+    #    procTweetsLDA.write(str(TweetJSON["proc_tweet"]).replace("\n", " ") + '\n')
+    #procTweetsLDA.close()
 
-    for RawTweet in StemmedTweets.find({ "id": tweetID }):
+    #Reading the ground-truth file
 
-        tweet_text = RawTweet['proc_tweet']
-        tweet_text = tweet_text.replace('\n', '')
-        tweet_text = tweet_text.replace('&gt;', '')
-        tweet_text = tweet_text.replace('&lt;', '')
-        tweet_text = tweet_text.replace('&amp;', '')
-        tweet_text = removeSpecialCharsFromText(tweet_text)
+    WriteLog("Reading the processed ground-truth file", ClassificationLogFile)
+    with open(AnnotationsProcessedTxt, 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            bigList.append((row[0].split(' '), row[1]))
 
-        tweet_text = removeTextFromText(tweet_text, "rt")
-        tweet_text = removeTextFromText(tweet_text, "#")
-        tweet_text = removeTextFromText(tweet_text, "http")
-        tweet_text = removeTextFromText(tweet_text, "@")
+    #WriteLog("Reading the ground-truth file", ClassificationLogFile)
+    #ProcessedAnnotations = open(AnnotationsProcessedTxt, 'w')
+    #with open(AnnotationsTxt) as anoFile:
+    #    for line in anoFile:
+    #        textList = line.split('\t')
+    #        textList.pop(0)
+    #        tweetLowercase = textList[-2].lower()
 
-        try:
-            procTweetsLDA.write(tweet_text + '\n')
-        except:
-            procTweetsLDA.write('dummy text\n')
+		  #  #Cleaning the tweets
+    #        tweetCleaned = removeTextFromText(tweetLowercase, "rt")
+    #        tweetCleaned = removeTextFromText(tweetCleaned, "#")
+    #        tweetCleaned = removeTextFromText(tweetCleaned, "http")
+    #        tweetCleaned = removeTextFromText(tweetCleaned, "@")
+    #        tweetCleaned = removeSpecialCharsFromText(tweetCleaned)
+    #        tweetCleaned = removeStopwords(tweetCleaned, stopwords.words("english"))
+    #        tweetCleaned = tweetCleaned.strip()
+    #        tweetLowerList = tweetCleaned.split(' ')
 
-count = 0
-#Reading the ground-truth file
-print("Reading the ground-truth file")
-with open(AnotationsTxt) as anoFile:
-	for line in anoFile:
-		textList = line.split('\t')
-		textList.pop(0)
-		tweetLowercase = textList[-2].lower()
+    #        ##Stemming (Accuracy seems to drop with stemming on!)
+    #        #StemmedTweetWords = [stemmer.stem(stemTweet) for stemTweet in tweetLowerList]
+    #        #stemmedString = ''
+    #        #for word in StemmedTweetWords:
+    #        #	stemmedString += word + ' '
 
-		#Cleaning the tweets
-		tweetCleaned = removeTextFromText(tweetLowercase, "rt")
-		tweetCleaned = removeTextFromText(tweetCleaned, "#")
-		tweetCleaned = removeTextFromText(tweetCleaned, "http")
-		tweetCleaned = removeTextFromText(tweetCleaned, "@")
-		tweetCleaned = removeSpecialCharsFromText(tweetCleaned)
-		tweetCleaned = removeStopwords(tweetCleaned)
-		tweetCleaned = tweetCleaned.strip()
-		tweetLowerList = tweetCleaned.split(' ')
+    #        sentiment = textList[-1][:-1]
+    #        bigList.append((tweetLowerList, sentiment))
+    #        #For the stemmer (if used)
+    #        #bigList.append((StemmedTweetWords, sentiment))
+    #        ProcessedAnnotations.write('"' + tweetCleaned + '", ' + sentiment + '\n')
+    #ProcessedAnnotations.close()
 
-		#Stemming (Accuracy seems to drop with stemming on!)
-		#StemmedTweetWords = [stemmer.stem(stemTweet) for stemTweet in tweetLowerList]
-		#stemmedString = ''
-		#for word in StemmedTweetWords:
-		#	stemmedString += word + ' '
-		#smallList = list()
+    #Splitting the set into train and test
+    train_data = bigList[:int(len(bigList) * 0.75)]
+    test_data = bigList[int(len(bigList) * 0.75):]
 
-		sentiment = textList[-1][:-1]
-		bigList.append((tweetLowerList, sentiment))
-        #For the stemmer (if used)
-		#bigList.append((StemmedTweetWords, sentiment))
-		#smallList.append((StemmedTweetWords, sentiment))
+    WriteLog("Getting Word Features", ClassificationLogFile)
+    wordFeatures = get_word_features(get_words_in_tweets(train_data))
 
-#Splitting the set into train and test
-train_data = bigList[:int(len(bigList) * 0.75)]
-test_data = bigList[int(len(bigList) * 0.75):]
+    WriteLog("Creating Training and Testing sets", ClassificationLogFile)
+    training_set = nltk.classify.apply_features(extract_features, train_data)
+    testing_set = nltk.classify.apply_features(extract_features, test_data)
+    #endregion
 
-print("Getting Word Features")
-wordFeatures = get_word_features(get_words_in_tweets(train_data))
-#endregion
+    #region Classifying
 
-#region Classifying
+    #region SVMClassifier
+    WriteLog("\nEntering SVM", ClassificationLogFile)
+    trainD = list()
+    testD = list()
+    gTruth = list()
 
-#Naive Bayes
-WriteLog("\nNaive Bayes Training\n", ClassificationLogFile)
-NaiveBayesClassifier = nltk.NaiveBayesClassifier.train(training_set)
-WriteLog(NaiveBayesClassifier.show_most_informative_features(32), ClassificationLogFile) #Shows Statistics (High Valued Features)
+    #Formatting the Data
+    for dictPair in training_set:
+        trainD.append(dictPair)
+    for dictPair in testing_set:
+        testD.append(dictPair[0])
+        gTruth.append(dictPair[1])
 
-#Naive Bayes Accuracy
-WriteLog("\nNaive Bayes Training Set Accuracy:" + str(nltk.classify.util.accuracy(NaiveBayesClassifier, testing_set)), ClassificationLogFile)
+    WriteLog("Starting SVM Training", ClassificationLogFile)
+    SVMClassifier = SklearnClassifier(SVC(), sparse=False).train(trainD)
+    SVMPredictions = SVMClassifier.classify_many(testD)
 
-#Naive Bayes Classification
-WriteLog("\nNaive Bayes Classification", ClassificationLogFile)
-DoClassify(NaiveBayesClassifier, NBtopicResultsTxt, topicTweetsLDATxt)
+    WriteLog("SVM Training Set Accuracy:", ClassificationLogFile)
+    WriteLog(str(accuracy_score(gTruth, SVMPredictions, normalize=True, sample_weight=None)), ClassificationLogFile)
 
-#SVM Classifier
-WriteLog("\nEntering SVM", ClassificationLogFile)
-testD = list()
-for dictPair in testing_set:
-	testD.append(dictPair[0])
+    #SVM Classification
+    WriteLog("SVM Classification", ClassificationLogFile)
+    DoClassify(SVMClassifier, SVMtopicResultsTxt, topicTweetsLDATxt)
 
-trainD = list()
-gTruth = list()
+    #SVM Predictions
+    WriteLog("SVM Predictions:", ClassificationLogFile)
+    WriteLog(SVMPredictions, ClassificationLogFile)
+    #endregion
 
-#Formatting the Data
-for dictPair in training_set:
-	trainD.append(dictPair)
+    #region NaiveBayes
+    WriteLog("\nNaive Bayes Training", ClassificationLogFile)
+    NaiveBayesClassifier = nltk.NaiveBayesClassifier.train(training_set)
+    WriteLog(NaiveBayesClassifier.show_most_informative_features(32), ClassificationLogFile) #Shows Statistics (High Valued Features)
 
-for dictPair in testing_set:
-	testD.append(dictPair[0])
-	gTruth.append(dictPair[1])
+    #Naive Bayes Accuracy
+    WriteLog("Naive Bayes Training Set Accuracy:", ClassificationLogFile)
+    WriteLog(str(nltk.classify.util.accuracy(NaiveBayesClassifier, testing_set)), ClassificationLogFile)
 
-WriteLog("Starting SVM Training", ClassificationLogFile)
-SVMClassifier = SklearnClassifier(SVC(), sparse=False).train(trainD)
-predictions = SVMClassifier.classify_many(testD)
+    #Naive Bayes Classification
+    WriteLog("Naive Bayes Classification", ClassificationLogFile)
+    DoClassify(NaiveBayesClassifier, NBtopicResultsTxt, topicTweetsLDATxt)
 
-WriteLog("\nSVM Predictions:", ClassificationLogFile)
-print(predictions)
-WriteLog("\nSVM Training Set Accuracy:", ClassificationLogFile)
-print(accuracy_score(gTruth, predictions, normalize=True, sample_weight=None))
+    #Naive Bayes Predictions
+    testD = list()
+    for dictPair in testing_set:
+    	testD.append(dictPair[0])
 
-#SVM Classification
-WriteLog("\nSVM Classification", ClassificationLogFile)
-DoClassify(SVMClassifier, SVMtopicResultsTxt, topicTweetsLDATxt)
+    NBPredictions = NaiveBayesClassifier.classify_many(testD)
+    WriteLog("Naive Bayes Predictions:", ClassificationLogFile)
+    WriteLog(NBPredictions, ClassificationLogFile)
+    #endregion
 
-#Decision Trees
-WriteLog("\nDecision Trees Training", ClassificationLogFile)
-DecisionTreesClassifier = nltk.classify.DecisionTreeClassifier.train(training_set, entropy_cutoff=0, support_cutoff=0)
+    #region DecisionTrees
+    #The Decision Trees part, whilst working in principle, takes an enormous amount of time and is hence commented out
+    WriteLog("\nDecision Trees Training", ClassificationLogFile)
+    DecisionTreesClassifier = nltk.classify.DecisionTreeClassifier.train(training_set, entropy_cutoff=0, support_cutoff=0)
 
-#Decision Trees Accuracy
-WriteLog("\nDecision Trees Training Set Accuracy:", ClassificationLogFile)
-print(nltk.classify.util.accuracy(DecisionTreesClassifier, testing_set))
+    #Decision Trees Accuracy
+    WriteLog("Decision Trees Training Set Accuracy:", ClassificationLogFile)
+    print(nltk.classify.util.accuracy(DecisionTreesClassifier, testing_set))
 
-#Decision Trees Classification
-WriteLog("\nDecision Trees Classification", ClassificationLogFile)
-DoClassify(DecisionTreesClassifier, DTtopicResultsTxt, topicTweetsLDATxt)
+    #Decision Trees Classification
+    WriteLog("Decision Trees Classification", ClassificationLogFile)
+    DoClassify(DecisionTreesClassifier, DTtopicResultsTxt, topicTweetsLDATxt)
 
-#region Cross Validation
-#Cross Validation (Caution! Cross Validation takes a relatively very long time to be completed!)
-subset_size = int(len(training_set) / CrossValidationNumFolds)
+    #Decision Trees Predictions
+    testD = list()
+    for dictPair in testing_set:
+    	testD.append(dictPair[0])
 
-WriteLog("\nNaive Bayes Cross Validation Accuracy", ClassificationLogFile)
-accuracy_sum = 0
-for i in range(CrossValidationNumFolds):
-    training_this_round = training_set[:i*subset_size] + training_set[(i+1)*subset_size:]
-    testing_this_round = training_set[i*subset_size:][:subset_size]
-    classifier = nltk.NaiveBayesClassifier.train(training_this_round)
-    accuracy_sum += nltk.classify.util.accuracy(classifier, testing_this_round)
-WriteLog(str(CrossValidationNumFolds) + "-fold Cross Validation Accuracy: " + str(accuracy_sum / CrossValidationNumFolds), ClassificationLogFile)
+    DTPredictions = DecisionTreesClassifier.classify_many(testD)
+    WriteLog("Decision Trees Predictions:", ClassificationLogFile)
+    WriteLog(DTPredictions, ClassificationLogFile)
+    #endregion
 
-WriteLog("SVM Cross Validation Accuracy", ClassificationLogFile)
-accuracy_sum = 0
-for i in range(CrossValidationNumFolds):
-    training_this_round = training_set[:i*subset_size] + training_set[(i+1)*subset_size:]
-    testing_this_round = training_set[i*subset_size:][:subset_size]
-    classifier = SklearnClassifier(SVC(), sparse=False).train(training_this_round)
-    predictions = classifier.classify_many(testing_this_round)
-    accuracy_sum += accuracy_score(gTruth, predictions, normalize=True, sample_weight=None)
-WriteLog(str(CrossValidationNumFolds) + "-fold Cross Validation Accuracy: " + str(accuracy_sum / CrossValidationNumFolds), ClassificationLogFile)
+    #region Cross Validation
+    #The Cross Validation part, whilst working in principle, takes an enormous amount of time and is hence commented out
+    subset_size = int(len(training_set) / CrossValidationNumFolds)
 
-WriteLog("Decision Trees Cross Validation Accuracy:", ClassificationLogFile)
-accuracy_sum = 0
-for i in range(CrossValidationNumFolds):
-    training_this_round = training_set[:i*subset_size] + training_set[(i+1)*subset_size:]
-    testing_this_round = training_set[i*subset_size:][:subset_size]
-    classifier = nltk.classify.DecisionTreeClassifier.train(training_this_round, entropy_cutoff=0, support_cutoff=0)
-    accuracy_sum += nltk.classify.util.accuracy(classifier, testing_this_round)
-WriteLog(str(CrossValidationNumFolds) + "-fold Cross Validation Accuracy: " + str(accuracy_sum / CrossValidationNumFolds), ClassificationLogFile)
-#endregion
+    WriteLog("\nNaive Bayes Cross Validation Accuracy", ClassificationLogFile)
+    accuracy_sum = 0
+    for i in range(CrossValidationNumFolds):
+        training_this_round = training_set[:i*subset_size] + training_set[(i+1)*subset_size:]
+        testing_this_round = training_set[i*subset_size:][:subset_size]
+        classifier = nltk.NaiveBayesClassifier.train(training_this_round)
+        accuracy_sum += nltk.classify.util.accuracy(classifier, testing_this_round)
+    WriteLog(str(CrossValidationNumFolds) + "-fold Cross Validation Accuracy: " + str(accuracy_sum / CrossValidationNumFolds), ClassificationLogFile)
 
-WriteLog("\nFinished Successfully!\n\n\n", ClassificationLogFile)
-#endregion
+    WriteLog("SVM Cross Validation Accuracy", ClassificationLogFile)
+    accuracy_sum = 0
+    for i in range(CrossValidationNumFolds):
+        training_this_round = training_set[:i*subset_size] + training_set[(i+1)*subset_size:]
+        testing_this_round = training_set[i*subset_size:][:subset_size]
+        classifier = SklearnClassifier(SVC(), sparse=False).train(training_this_round)
+        SVMPredictions = classifier.classify_many(testing_this_round)
+        accuracy_sum += accuracy_score(gTruth, SVMPredictions, normalize=True, sample_weight=None)
+    WriteLog(str(CrossValidationNumFolds) + "-fold Cross Validation Accuracy: " + str(accuracy_sum / CrossValidationNumFolds), ClassificationLogFile)
 
+    WriteLog("Decision Trees Cross Validation Accuracy:", ClassificationLogFile)
+    accuracy_sum = 0
+    for i in range(CrossValidationNumFolds):
+        training_this_round = training_set[:i*subset_size] + training_set[(i+1)*subset_size:]
+        testing_this_round = training_set[i*subset_size:][:subset_size]
+        classifier = nltk.classify.DecisionTreeClassifier.train(training_this_round, entropy_cutoff=0, support_cutoff=0)
+        accuracy_sum += nltk.classify.util.accuracy(classifier, testing_this_round)
+    WriteLog(str(CrossValidationNumFolds) + "-fold Cross Validation Accuracy: " + str(accuracy_sum / CrossValidationNumFolds), ClassificationLogFile)
+    #endregion
+
+    WriteLog("\nFinished Successfully!\n\n\n", ClassificationLogFile)
+    #endregion
+
+except Exception as e:
+    eMessage = 'Main error\n' + 'Time of Error: ' + str(datetime.now()) + '\n' + str(e) + '\n'
+    print (str(eMessage))
+    saveFile = open(LogDir + 'AffectiveAnalysis_Problems.txt', 'a')
+    saveFile.write(eMessage)
+    saveFile.close()
 #endregion

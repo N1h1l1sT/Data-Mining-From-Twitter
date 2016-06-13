@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{d292c1f3-920c-4279-a10a-8f7a20531a93}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>Source Code\Classification\createSets.py</StartupFile>
+    <StartupFile>Source Code\AffAnalys.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -22,30 +22,40 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Source Code\Distribution\datefile.csv" />
+    <Content Include="Source Code\AffectiveAnalysis\Annotations.txt" />
+    <Content Include="Source Code\AffectiveAnalysis\AnnotationsProcessed.txt" />
+    <Content Include="Source Code\Auxiliary\Keywords.txt" />
     <Content Include="Source Code\Distribution\datefile.xlsx" />
-    <Content Include="Source Code\Distribution\datefile2.csv" />
     <Content Include="Source Code\Distribution\datefile_users.xlsx" />
     <Content Include="Source Code\Distribution\hashtags.txt" />
     <Content Include="Source Code\Distribution\locations-top10countries.txt" />
     <Content Include="Source Code\Distribution\locations.txt" />
     <Content Include="Source Code\Distribution\top1000hashtags.txt" />
     <Content Include="Source Code\Distribution\usernames.txt" />
+    <Content Include="Source Code\LDA\Final Topic Detection results.txt" />
+    <Content Include="Source Code\LDA\SortedLDA.csv" />
+    <Content Include="Source Code\Logs\Classification.log" />
     <Content Include="Source Code\Logs\LDA.Log" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source Code\AffAnalys.py" />
+    <Compile Include="Source Code\Auxiliary\Find_BurstEvents.py" />
+    <Compile Include="Source Code\Auxiliary\Find_Hashtags.py" />
+    <Compile Include="Source Code\Auxiliary\Find_Locations.py" />
+    <Compile Include="Source Code\Auxiliary\Find_Users.py" />
     <Compile Include="Source Code\Functions.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Source Code\Topic_Detection.py" />
-    <Compile Include="Source Code\Tweets_Processing.py" />
-    <Compile Include="Source Code\Tweets_Streaming.py">
+    <Compile Include="Source Code\Processing.py" />
+    <Compile Include="Source Code\Streaming.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Source Code\TopicDet.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Source Code\" />
+    <Folder Include="Source Code\AffectiveAnalysis\" />
+    <Folder Include="Source Code\Auxiliary\" />
     <Folder Include="Source Code\Distribution\" />
     <Folder Include="Source Code\LDA\" />
     <Folder Include="Source Code\Logs\" />

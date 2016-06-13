@@ -10,9 +10,21 @@ from datetime import datetime
 
 #region Initialisation
 LogDir = "./Source Code/Logs/"
-client = MongoClient() #Lack of arguments defaults to localhost:27017
-db = client['mongorefcon']
-collection = db['refcrisis']
+
+lstTrackingFor = ["migrants", "migration crisis",  "migration flow",  "refugees",  "#RefugeeCrisis",
+                                "#refugeesGr",  "#refugeeswelcome",  "#WelcomeRefugees",  "#ProMuslimRefugees",
+                                "asylum seekers",  "human rights",  "#helpiscoming",  "solidarity",
+                                "#solidaritywithrefugees",  "Balkan route",  "irregular migrants",  "borders",
+                                "open borders",  "border closure",  "border share",  "No borders",  "#OpentheBorders",
+                                "Syria",  "Iraq",  "Afghanistan",  "Pakistan",  "islamists",  "ISIS",  "daesh",
+                                "muslims",  "Idomeni",  "Calais",  "Lesbos",  "Lesvos",  "Lesbosisland",
+                                "migrant camps",  "refugee camps",  "#safepassage",  "rapefugees",  "#antireport ",
+                                "Aylan",  "European Mobilisation",  "Amnesty International",  "Frontex",  "UNHCR",
+                                "UN Refugee Agency",  "#FortressEurope",  "@MovingEurope"]
+
+MongoDBCon = MongoClient() #Lack of arguments defaults to localhost:27017
+MongoDBDatabase = MongoDBCon['RefugeeCrisisCon']
+RawTweetsJSON_coll = MongoDBDatabase['RawTweetsJSON']
 
 #We need the consumer key, consumer secret, access token, access secret.
 ckey = "ro4d6rvefo412pnYxNV3Xb5ej"
@@ -31,14 +43,14 @@ class listener(StreamListener):
         try:
             all_data = json.loads(data)
             #Inserting them to the MongoDB database
-            result = collection.insert_one(all_data)  #The Full JSON format
+            result = RawTweetsJSON_coll.insert_one(all_data)  #The Full JSON format
 
             try:
                 print(all_data["text"])
             except Exception as ex:
                 print ("Error on printing the tweet: ", str(ex))
 
-            return true
+            return True
 
         #in case internet drops or something, let's not stop the whole procedure
         except BaseException as e:
@@ -71,16 +83,7 @@ except Exception as e:
 
 while True:
     try:
-        twitterStream.filter(languages=["en"], track=["migrants", "migration crisis",  "migration flow",  "refugees",  "#RefugeeCrisis",
-                                "#refugeesGr",  "#refugeeswelcome",  "#WelcomeRefugees",  "#ProMuslimRefugees",
-                                "asylum seekers",  "human rights",  "#helpiscoming",  "solidarity",
-                                "#solidaritywithrefugees",  "Balkan route",  "irregular migrants",  "borders",
-                                "open borders",  "border closure",  "border share",  "No borders",  "#OpentheBorders",
-                                "Syria",  "Iraq",  "Afghanistan",  "Pakistan",  "islamists",  "ISIS",  "daesh",
-                                "muslims",  "Idomeni",  "Calais",  "Lesbos",  "Lesvos",  "Lesbosisland",
-                                "migrant camps",  "refugee camps",  "#safepassage",  "rapefugees",  "#antireport ",
-                                "Aylan",  "European Mobilisation",  "Amnesty International",  "Frontex",  "UNHCR",
-                                "UN Refugee Agency",  "#FortressEurope",  "@MovingEurope"])
+        twitterStream.filter(languages=["en"], track = lstTrackingFor)
     except Exception as e:
         print (str(e))
 
